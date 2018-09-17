@@ -4,8 +4,23 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const config = require('../../config/config');
 const passport = require('passport');
+const registerValidateInput = require('../../validations/register');
+const loginValidateInput = require('../../validations/login');
+
 
 router.post("/login", (req, res) => {
+
+    const {
+        isValid,
+        errors
+    } = loginValidateInput(req.body);
+
+    if (!isValid) {
+        return res.status(400).json({
+            errors
+        })
+    }
+
     const email = req.body.email;
     const password = req.body.password;
 
@@ -45,12 +60,24 @@ router.post("/login", (req, res) => {
 });
 
 router.post("/register", (req, res) => {
+
+    const {
+        isValid,
+        errors
+    } = registerValidateInput(req.body);
+    if (!isValid) {
+        return res.status(400).json({
+            errors
+        });
+    }
+
     User.findOne({
             email: req.body.email
         }).then(user => {
             if (user) {
+                errors.email = "Already exists";
                 res.status(400).json({
-                    email: "Already exists"
+                    errors
                 });
             } else {
                 bcrypt.genSalt(10, (err, salt) => {
