@@ -6,6 +6,7 @@ const config = require('./config/config');
 const authRoutes = require('./routes/api/auth');
 const postRoutes = require('./routes/api/posts');
 const profileRoutes = require('./routes/api/profile');
+const passport = require('passport');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -23,13 +24,14 @@ mongoose.connect(config.mongoUri, {
     .then(() => console.log('Mongodb connected'))
     .catch((err) => console.log('Mongo connection failed', err));
 
+//Passport
+app.use(passport.initialize());
+require('./config/passport')(passport);
+
 //Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/profile", profileRoutes);
 app.use("/api/posts", postRoutes);
-
-app.get("/", (req, res) => res.send('hello'));
-
 
 app.listen(PORT, () => {
     console.log(`Connected on port ${PORT}`);

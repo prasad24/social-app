@@ -3,6 +3,7 @@ const User = require("../../models/User");
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const config = require('../../config/config');
+const passport = require('passport');
 
 router.post("/login", (req, res) => {
     const email = req.body.email;
@@ -92,6 +93,20 @@ router.post("/register", (req, res) => {
                 error: 'User registration failed'
             })
         });
+});
+
+router.get('/user', passport.authenticate('jwt', {
+    session: false
+}), (req, res) => {
+    console.log(req.user);
+    res.json({
+        id: req.user.id,
+        firstName: req.user.firstName,
+        lastName: req.user.lastName,
+        email: req.user.email,
+        birthYear: req.user.birthYear,
+        gender: req.user.gender
+    });
 });
 
 module.exports = router;
