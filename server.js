@@ -1,5 +1,5 @@
 const express = require('express');
-// const bodyParser = require('body-parser');
+const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 
 const config = require('./config/config');
@@ -9,6 +9,12 @@ const profileRoutes = require('./routes/api/profile');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+
+app.use(bodyParser.urlencoded({
+    extended: false
+}));
+app.use(bodyParser.json());
+
 
 //db connection
 mongoose.connect(config.mongoUri, {
@@ -24,8 +30,6 @@ app.use("/api/posts", postRoutes);
 
 app.get("/", (req, res) => res.send('hello'));
 
-// // app.use(bodyParser.urlencoded(true));
-// // app.use(bodyParser.json());
 
 app.listen(PORT, () => {
     console.log(`Connected on port ${PORT}`);
